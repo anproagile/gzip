@@ -34,6 +34,7 @@ const strategies = {
 				const response = await handle(event);
 
 				console.info({
+					clientId: event.clientId,
 					strategy: name == undef ? key : name,
 					responseMode: response.type,
 					requestMode: event.request.mode,

@@ -18,5 +18,5 @@ import {SW} from "../serviceworker.js";
  */
 self.addEventListener("message", (event) => {
 	// delete old app owned caches
-	SW.resolve((event.data.action || "default") + "action", event.data);
+	SW.resolve((event.data.action || "default") + "Action", event);
 });

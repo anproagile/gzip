@@ -14,7 +14,7 @@ module.exports = {
 		//	publicPath: "/assets/", // string    // the url to the output directory resolved relative to the HTML page
 		//	library: "SW", // string,
 		// the name of the exported library
-		libraryTarget: "this" // universal module definition    // the type of the exported library
+		libraryTarget: "umd" // universal module definition    // the type of the exported library
 		/* Advanced output configuration (click to show) */
 	},
 	module: {

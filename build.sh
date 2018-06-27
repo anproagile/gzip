@@ -86,4 +86,4 @@ uglifyjs --ecma=8 --compress passes=3,toplevel=true,unsafe_comps=true,unsafe_pro
   --warn --mangle toplevel=true -- ../dist/onesignal.js > ../dist/onesignal.min.js
 #
 #
-sha1sum ../dist/serviceworker.js | awk '{print $1;}' > ../dist/worker_version
+sha1sum ../dist/serviceworker.js | awk '{print $1;}' > ../../worker_version

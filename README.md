@@ -183,6 +183,8 @@ You can specify which resource are not managed by the service worker by specifyi
 ## V2.4.1
 
 -   Add a service worker for administrator with no caching because admin requests were still cached by the website service worker
+-   Make lazyloaded images indexabl using noscript tag
+-   force file name generation whenever the settings are changed
 
 ## V2.4
 

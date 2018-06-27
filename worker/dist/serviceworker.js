@@ -1,4 +1,14 @@
-(function(e, a) { for(var i in a) e[i] = a[i]; }(this, /******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else {
+		var a = factory();
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
+})(self, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -116,7 +126,7 @@ __webpack_require__.r(__webpack_exports__);
 // @ts-check
 /* eslint wrap-iife: 0 */
 
-// build 1be2ae0 2018-06-27 11:07:00-04:00
+// build 0e484da 2018-06-30 08:42:18-04:00
 /* eslint wrap-iife: 0 */
 // validator https://www.pwabuilder.com/
 // pwa app image generator http://appimagegenerator-pre.azurewebsites.net/
@@ -622,7 +632,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /*  */
 
-// build 1be2ae0 2018-06-27 11:07:00-04:00
+// build 0e484da 2018-06-30 08:42:18-04:00
 /* eslint wrap-iife: 0 */
 // validator https://www.pwabuilder.com/
 // pwa app image generator http://appimagegenerator-pre.azurewebsites.net/
@@ -654,8 +664,8 @@ Object.defineProperties(SW.app, {
 	cacheName: {value: "{CACHE_NAME}", enumerable: true},
 	codeName: {value: "Page Optimizer Plugin", enumerable: true},
 	build: {value: "{VERSION}", enumerable: true},
-	buildid: {value: "1be2ae0", enumerable: true},
-	builddate: {value: "2018-06-27 11:07:00-04:00", enumerable: true},
+	buildid: {value: "0e484da", enumerable: true},
+	builddate: {value: "2018-06-30 08:42:18-04:00", enumerable: true},
 	urls: {value: "{CDN_HOSTS}", enumerable: true},
 	homepage: {value: "https://github.com/tbela99/gzip", enumerable: true}
 });
@@ -1627,6 +1637,7 @@ const strategies = {
 				const response = await handle(event);
 
 				console.info({
+					clientId: event.clientId,
 					strategy: name == undef ? key : name,
 					responseMode: response.type,
 					requestMode: event.request.mode,
@@ -1982,4 +1993,5 @@ self.addEventListener("install", event => {
 
 
 /***/ })
-/******/ ])));
+/******/ ]);
+});

@@ -1,8 +1,6 @@
 {
   "scripts": {
-    "webpack": "webpack --config webpack.config.js",
-    "worker": "sh ./build.sh",
-    "babel": "sh ./babel.sh",
+    "build": "sh ./build.sh",
     "docs": "jsdoc -c jsdoc.json",
     "build-all": "sh ./build.sh && jsdoc -c jsdoc.json"
   },
