@@ -327,14 +327,7 @@ class PlgSystemGzip extends JPlugin
                     $this->updateServiceWorker($this->options);
                 }
 
-                $file = JPATH_SITE.'/cache/z/app/'.$_SERVER['SERVER_NAME'].'/manifest_version';
-
-                if (!is_file($file)) {
-
-                    $this->updateManifest($this->options);
-                }
-
-                $this->manifest_id = file_get_contents($file);
+                $this->manifest_id = file_get_contents(JPATH_SITE.'/cache/z/app/'.$_SERVER['SERVER_NAME'].'/manifest_version');
             }
 
 			if (strpos($_SERVER['REQUEST_URI'], JURI::root(true).'/'.$this->route) === 0) {
@@ -539,32 +532,17 @@ class PlgSystemGzip extends JPlugin
         if(!empty($options['jsremove'])) {
 
             $options['jsremove'] = preg_split('#\s+#s', $options['jsremove'], -1, PREG_SPLIT_NO_EMPTY);
-		}
-		
-		if (empty($options['jsremove'])) {
-
-			$options['jsremove'] = [];
-		}
+        }
 
         if(!empty($options['cssignore'])) {
 
             $options['cssignore'] = preg_split('#\s+#s', $options['cssignore'], -1, PREG_SPLIT_NO_EMPTY);
-		}
-		
-		if (empty($options['cssignore'])) {
-
-			$options['cssignore'] = [];
-		}
+        }
 
         if(!empty($options['cssremove'])) {
 
             $options['cssremove'] = preg_split('#\s+#s', $options['cssremove'], -1, PREG_SPLIT_NO_EMPTY);
         }
-
-		if (empty($options['cssremove'])) {
-
-			$options['cssremove'] = [];
-		}
 
         foreach (['js', 'css', 'img', 'ch'] as $key) {
 
@@ -654,7 +632,50 @@ class PlgSystemGzip extends JPlugin
             'background_color' => $options['pwa_app_bg_color'],
             'theme_color' => $options['pwa_app_theme_color'],
             'display' => $options['pwa_app_display']
-        ];
+		];
+		
+		/*
+"share_target": {
+  "action": "/share-target/",
+  "method": "GET",
+  "enctype": "application/x-www-form-urlencoded",
+  "params": {
+    "title": "title",
+    "text": "text",
+    "url": "url"
+  }
+
+		*/
+
+		if (!empty($options['pwa_share_target_enabled'])) {
+
+			$manifest['share_target'] = [
+
+				'action' => $options['pwa_share_target_action'],
+				'method' => $options['pwa_share_target_method'],
+				'enctype' => $options['pwa_share_target_enctype']
+			];
+
+			if (!empty($options['title_supported'])) {
+
+				$manifest['share_target']['params']['title'] = !empty($options['pwa_share_target_params']['title']) ? $options['pwa_share_target_params']['title'] : 'title';
+			}
+
+			if (!empty($options['text_supported'])) {
+
+				$manifest['share_target']['params']['text'] = !empty($options['pwa_share_target_params']['text']) ? $options['pwa_share_target_params']['text'] : 'text';
+			}
+
+			if (!empty($options['url_supported'])) {
+
+				$manifest['share_target']['params']['url'] = !empty($options['pwa_share_target_params']['url']) ? $options['pwa_share_target_params']['url'] : 'url';
+			}
+
+		//	if (!empty($options['files_supported'])) {
+
+		//		$manifest['share_target']['params']['files'] = isset($options['pwa_share_target_params']['title']) ? $options['pwa_share_target_params']['title'] : 'title';
+		//	}
+		}
 
         if(!empty($options['onesignal'])) {
 
@@ -828,7 +849,7 @@ class PlgSystemGzip extends JPlugin
 		}
 
 		$worker_id = trim(file_get_contents(__DIR__.'/worker_version'));
-		$hash = hash('sha1', json_encode($options).$worker_id);
+		$hash = hash('sha1', json_encode($options).$this->workerworker_id);
 		
 		$hosts = [$_SERVER['SERVER_NAME']];
 
