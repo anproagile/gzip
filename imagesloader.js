@@ -83,8 +83,8 @@ LIB.ready(function(undef) {
                         container.parentElement.insertBefore(oldImage, container);
                         container.parentElement.removeChild(container);
                         //	}
-                                        }, 10);
-                }, 10);
+                                        }, 50);
+                }, 50);
             }
         });
     }

@@ -18,8 +18,7 @@
       "multi ./worker/src/index.js": 14,
       "worker/src/service/sw.service.activate.js": 15,
       "worker/src/service/sw.service.fetch.js": 16,
-      "worker/src/service/sw.service.install.js": 17,
-      "worker/src/sync/sw.service.sync.js": 18
+      "worker/src/service/sw.service.install.js": 17
     },
     "usedIds": {
       "0": 0,
@@ -39,8 +38,7 @@
       "14": 14,
       "15": 15,
       "16": 16,
-      "17": 17,
-      "18": 18
+      "17": 17
     }
   },
   "chunks": {
