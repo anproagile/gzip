@@ -1,5 +1,9 @@
 # Change History
 
+## V2.5.2
+
+- Added offline page support
+
 ## V2.5.1
 
 - Implement background sync with fallback
