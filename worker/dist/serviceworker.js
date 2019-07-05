@@ -85,14 +85,7 @@
 					_query("getAll", true, keyToUse, index),
 				put: entryData => _query("put", false, entryData),
 				delete: keyToUse => _query("delete", false, keyToUse),
-				clear: () => _query("clear", false),
-				deleteDatabase: () => new Promise(function (resolve, reject) {
-
-					const result = indexedDB.deleteDatabase;
-
-					result.onerror = reject;
-					result.onsuccess = resolve;
-				})
+				clear: () => _query("clear", false)
 			};
 			const _successOnBuild = () => {
 				db = openDBRequest.result;
@@ -877,11 +870,11 @@
 			enumerable: true
 		},
 		buildid: {
-			value: "ed388ad",
+			value: "3c98be6",
 			enumerable: true
 		},
 		builddate: {
-			value: "2019-07-05 02:14:58-04:00",
+			value: "2019-07-03 21:31:33-04:00",
 			enumerable: true
 		},
 		urls: {
@@ -891,9 +884,6 @@
 		backgroundSync: {
 			value: "{BACKGROUND_SYNC}",
 			enumerable: true
-		},
-		offline: {
-			value: "{pwa_offline_page}"
 		},
 		homepage: {
 			value: "https://github.com/tbela99/gzip",
@@ -1373,29 +1363,6 @@
 	 * @license     MIT License
 	 */
 
-	let undef$6;
-
-	async function offline(event) {
-
-		console.log({
-			'SW.app.offline': SW.app.offline,
-			'event.request.mode': event.request.mode,
-			'event.request.method': event.request.method
-		});
-
-		if (SW.app.offline.url != '' && event.request.mode == 'navigate' && SW.app.offline.methods.includes(event.request.method)) {
-
-			const match = caches.match(SW.app.offline.url);
-
-			if (match != undef$6) {
-
-				return match;
-			}
-
-			return match;
-		}
-	}
-
 	/**
 	 * @param {FetchEvent} event
 	 */
@@ -1403,60 +1370,23 @@
 	self.addEventListener("fetch", (event) => {
 		const router = SW.routes.getRouter(event);
 
-		event.respondWith((async function () {
-
-			let response;
-
-			if (router != null) {
-
-				try {
-
-					response = await router.handler.handle(event);
-					//	.then(response => {
+		if (router != null) {
+			event.respondWith(
+				router.handler.handle(event).then(response => {
 
 					if (!(response instanceof Response)) {
 
-						let resp = await SW.routes.resolve('fail', event.request, response);
-
-						if (resp instanceof Response) {
-
-							response = resp;
-						}
-					}
-
-					//		return response
-
-					//	}).
-					//	then(response => {
-
-					if (response == undef$6) {
-
-						response = await offline(event);
-						//.then(response => {
-
-						if (response == undef$6) {
-
-							response = await fetch(event.request);
-						}
-
-						//	return response
-						//	})
+						return SW.routes.resolve('fail', event.request, response).then(() => response);
 					}
 
 					return response
-					//	}).
-				} catch (error) {
-					//	catch ((error) => {
 
+				}).catch((error) => {
 					console.error("😭", error);
-
-					return offline(event)
-					//	});
-				}
-			}
-
-			return fetch(event.request).catch(() => offline(event))
-		})());
+					return fetch(event.request);
+				})
+			);
+		}
 	});
 
 	/**
@@ -1520,7 +1450,7 @@
 	 */
 
 	const cacheName$1 = "{CACHE_NAME}";
-	let undef$7 = null;
+	let undef$6 = null;
 
 	const serializableProperties = [
 	    'method',
@@ -1559,7 +1489,7 @@
 
 	                let value = data[name];
 
-	                if (value == undef$7) {
+	                if (value == undef$6) {
 
 	                    return '';
 	                }
@@ -1568,10 +1498,10 @@
 
 	                    if (value instanceof Headers) {
 
-	                        return [...value.values()].filter(value => value != undef$7).join('');
+	                        return [...value.values()].filter(value => value != undef$6).join('');
 	                    }
 
-	                    return Object.values(value).map(value => data[name][value] != undef$7 ? data[name][value] : '').join('');
+	                    return Object.values(value).map(value => data[name][value] != undef$6 ? data[name][value] : '').join('');
 	                }
 
 	                if (name == 'body') {
@@ -1639,7 +1569,7 @@
 	     */
 	    async getDB() {
 
-	        if (this.db == undef$7) {
+	        if (this.db == undef$6) {
 
 	            this.db = await DB('gzip_sw_worker_sync_requests', 'id');
 	        }
@@ -1676,13 +1606,13 @@
 
 	                let response = await cache.match(request);
 
-	                remove = response != undef$7;
+	                remove = response != undef$6;
 
 	                if (!remove) {
 
 	                    response = await fetch(request.clone());
 
-	                    remove = response != undef$7 && response.ok;
+	                    remove = response != undef$6 && response.ok;
 
 	                    if (remove && isCacheableRequest(request, response)) {
 
@@ -1797,7 +1727,7 @@
 	 * @license     MIT License
 	 */
 
-	const undef$8 = null;
+	const undef$7 = null;
 	const route = SW.routes;
 	const scope = SW.app.scope;
 	const cacheExpiryStrategy = "{cacheExpiryStrategy}";
@@ -1821,7 +1751,7 @@
 			new Router.RegExpRouter(
 				new RegExp(entry[1], "i"),
 				strategies.get(entry[0]),
-				option == undef$8 ?
+				option == undef$7 ?
 				option : {
 					plugins: [new expiration.CacheExpiration(option)]
 				}
@@ -1873,7 +1803,7 @@
 
 			const settings = await db.get("gzip");
 
-			if (settings != undef$8) {
+			if (settings != undef$7) {
 				if (settings.route != "{ROUTE}") {
 					// the url cache prefix has changed! delete private cache expiration data
 					let storeName, store;
@@ -1894,7 +1824,7 @@
 							}
 						]);
 
-						if (store != undef$8) {
+						if (store != undef$7) {
 							store.clear();
 						}
 					}
@@ -1910,10 +1840,6 @@
 			 * @var {boolean|string}
 			 */
 			const search = tokens.length == 2 && tokens[0] + "_";
-
-			console.log({
-				search
-			});
 
 			// delete older app caches
 			if (search != false) {

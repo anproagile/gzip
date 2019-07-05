@@ -80,14 +80,7 @@ export async function DB(dbName, key = "id", indexes = []) {
 				_query("getAll", true, keyToUse, index),
 			put: entryData => _query("put", false, entryData),
 			delete: keyToUse => _query("delete", false, keyToUse),
-			clear: () => _query("clear", false),
-			deleteDatabase: () => new Promise(function (resolve, reject) {
-
-				const result = indexedDB.deleteDatabase;
-
-				result.onerror = reject;
-				result.onsuccess = resolve;
-			})
+			clear: () => _query("clear", false)
 		};
 		const _successOnBuild = () => {
 			db = openDBRequest.result;
