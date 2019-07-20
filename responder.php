@@ -194,10 +194,9 @@ if (!ini_get('zlib.output_compression')) {
 	}
 
 	$dt->modify('+'.$maxage);
-	$maxage = $dt->getTimestamp() - $now;
 
 	header('Accept-Ranges: bytes');
-	header('Cache-Control: public, max-age='.$maxage.', stale-while-revalidate='.(2 * $maxage).', immutable');
+	header('Cache-Control: public, max-age='.($dt->getTimestamp() - $now).', immutable');
 
 	if(!empty($range) && ($range[0] > 0 || $range[1] < $size -1)) {
 
@@ -211,11 +210,10 @@ if (!ini_get('zlib.output_compression')) {
 			fseek($handle, $cur);
 		}
 
-		//1024 * 16 = 16384
 		while(!feof($handle) && $cur <= $end && (connection_status() == 0))
 		{
-			print fread($handle, min(16384, ($end - $cur) + 1));
-			$cur += 16384;
+			print fread($handle, min(1024 * 16, ($end - $cur) + 1));
+			$cur += 1024 * 16;
 		}
 
 		fclose($handle);
