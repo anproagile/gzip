@@ -15,10 +15,10 @@
     "use strict";
     const merge = LIB.Utils.merge;
     /**
-   * legacy srcset support
-   * @param {HTMLImageElement} image
-   * @returns {Function} update
-   */    function rspimages(image) {
+	 * legacy srcset support
+     * @param {HTMLImageElement} image
+     * @returns {Function} update
+     */    function rspimages(image) {
         let mq;
         const mqs = image.getAttribute("sizes").replace(/\)\s[^,$]+/g, ")").split(",");
         const images = image.dataset.srcset.split(",").map(function(src) {
@@ -65,36 +65,32 @@
     }
     function load(oldImage, observer) {
         const img = new Image();
-        img.src = oldImage.dataset.src != undef ? oldImage.dataset.src : oldImage.src;
-        if (oldImage.dataset.srcset != undef && window.matchMedia) {
+        //	if (oldImage.dataset.src != undef) {
+                img.src = oldImage.dataset.src != undef ? oldImage.dataset.src : oldImage.src;
+        //	}
+                if (oldImage.dataset.srcset != undef && window.matchMedia) {
             if (!("srcset" in img)) {
-                if (oldImage.dataset.srcset != undef) {
-                    img.dataset.srcset = oldImage.dataset.srcset;
-                }
-                if (oldImage.hasAttribute("sizes")) {
-                    img.setAttribute("sizes", oldImage.getAttribute("sizes"));
-                    const update = rspimages(img);
-                    img.addEventListener("load", function() {
-                        window.removeEventListener("resize", update, false);
-                        rspimages(oldImage);
-                    }, false);
-                }
+                img.dataset.srcset = oldImage.dataset.srcset;
+                img.setAttribute("sizes", oldImage.getAttribute("sizes"));
+                const update = rspimages(img);
+                img.addEventListener("load", function() {
+                    window.removeEventListener("resize", update, false);
+                    rspimages(oldImage);
+                }, false);
             } else {
-                if (oldImage.dataset.srcset != undef) {
-                    img.srcset = oldImage.dataset.srcset;
-                } else {}
+                img.srcset = oldImage.dataset.srcset;
             }
         }
         observer.trigger("preload", img, oldImage);
         if (img.decode != undef) {
             img.decode().then(function() {
                 observer.trigger("load", img, oldImage);
-            }).catch(function(error) {
-                observer.trigger("error", error, img, oldImage);
+            }).catch(function() {
+                observer.trigger("error", img);
             });
         } else {
-            img.onerror = function(error) {
-                observer.trigger("error", error, img, oldImage);
+            img.onerror = function() {
+                observer.trigger("error", img, oldImage);
             };
             if (img.height > 0 && img.width > 0) {
                 observer.trigger("load", img, oldImage);
@@ -110,10 +106,10 @@
     }
     LIB.images = merge(Object.create(null), {
         /**
-     *
-     * @param string selector
-     * @param object options
-     */
+		 *
+		 * @param string selector
+		 * @param object options
+		 */
         lazy: function(selector, options) {
             const images = [].slice.apply((options && options.container || document).querySelectorAll(selector));
             const observer = merge(true, Object.create(null), LIB.Event);

@@ -1,11 +1,11 @@
 # Joomla Website Optimizer Plugin
 
-[https://extensions.joomla.org/extensions/extension/core-enhancements/performance/gzip/](https://extensions.joomla.org/extensions/extension/core-enhancements/performance/gzip/)
+[![Known Vulnerabilities](https://snyk.io/test/github/tbela99/gzip/badge.svg)](https://snyk.io/test/github/tbela99/gzip) [![Download from JED](https://img.shields.io/badge/JED-Download-blueviolet.svg)](https://extensions.joomla.org/extensions/extension/core-enhancements/performance/gzip/)
 
 Do you want to improve your website by
 
 - improving loading performance?
-- enable offline first capabilities via service worker?
+- enable offline capabilities via service worker?
 - or turn it into a progressive web application?
 
 This extension allows you to do all of these things.
@@ -31,7 +31,7 @@ There are additional plugins that help optimizing and profiling your page or ser
     - [Features](#Features)
     - [5.1. Installable web app](#51-Installable-web-app)
     - [5.2. Web Share Target Level 2](#52-Web-Share-Target-Level-2)
-    - [5.3. Offline first](#53-Offline-first)
+    - [5.3. Offline mode](#53-Offline-mode)
     - [5.4. Configurable cache](#54-Configurable-cache)
     - [5.5. Network cache strategies](#55-Network-cache-strategies)
     - [5.6. Web Push](#56-Web-Push)
@@ -124,7 +124,7 @@ If you use a cdn, you will need to disable cdn optimizations for css and javascr
 
 here are some of the features implemented
 
-- Offline first
+- Offline mode
 - Installable web app with configurable settings
 - Background Sync with fallback support
 - Configurable manifest settings
@@ -151,7 +151,7 @@ here are some of the features implemented
 Web Share Target allows your pwa app to receive data (text and files) shared by other applications on your mobile device. You can configure your pwa to become a receiver on android and IOS using the web target api level 2.
 You can also configure which data you want to be sent to your app. To learn more about web shared target api, please go [here](https://wicg.github.io/web-share-target/) and [here](https://wicg.github.io/web-share-target/level-2/)
 
-### 5.3. Offline first
+### 5.3. Offline mode
 
 - **Offline page**:
   You can configure an offline page that will be show whenever the user navigates to a page and that page could not be loaded.

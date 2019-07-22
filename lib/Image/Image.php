@@ -60,13 +60,12 @@ class Image {
 
 		return image_type_to_mime_type  ($this->_image_type);
 	}
-	
+
 	/**
      * Load image
      *
      * @param string $file
      * @return \Image\Image this instance
-	 * @throw \InvalidArgumentException
      */
 	public function load ($file) {
 
@@ -95,17 +94,7 @@ class Image {
 			$this->_image_type = IMAGETYPE_WEBP;
         }
         else {
-			
-			$image_string = file_get_contents($file);
-			$this->_image = imagecreatefromstring($image_string);
-			
-			if (!$this->_image) {
-				
-            	throw new \InvalidArgumentException ('Unsupported image type: '.$file, 400);
-			}
-
-			$image_size = getimagesizefromstring($image_string);
-			$this->_image_type = $image_size[2];
+            throw new InvalidArgumentException ('Unsupported image type', 400);
         }
 
         imagealphablending($this->_image, false);
