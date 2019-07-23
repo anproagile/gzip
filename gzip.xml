@@ -7,7 +7,7 @@
     <license>Released under dual license LGPL v3 | MIT</license>
     <authorEmail>contact@tbela.net</authorEmail>
     <authorUrl>https://tbela.net</authorUrl>
-    <version>2.5.2</version>
+    <version>2.5.4</version>
     <description>PLG_SYSTEM_GZIP_XML_DESCRIPTION</description>
     <files>
         <folder>css</folder>
@@ -68,7 +68,7 @@
                         <option value="content">PLG_GZIP_FIELD_HASHFILES_OPTION_CONTENT</option>
                     </field>
                     <field name="cache_key" label="PLG_GZIP_FIELD_CACHE_KEY_LABEL" description="PLG_GZIP_FIELD_CACHE_KEY_DESCRIPTION" type="text" default="" size="5" pattern="[a-zA-Z0-9@_]+" maxlength="5" class="form-control" />
-                    <field name="maxage" label="PLG_GZIP_FIELD_MAXAGE_LABEL" description="PLG_GZIP_FIELD_MAXAGE_DESCRIPTION" size="3" first="1" last="24" step="1" type="maxage" class="form-control" default="2months" />
+                    <field name="maxage" label="PLG_GZIP_FIELD_MAXAGE_LABEL" description="PLG_GZIP_FIELD_MAXAGE_DESCRIPTION" first="1" last="24" step="1" type="maxage" default="2months" />
                     <field type="spacer" hr="true" />
                     <field type="spacer" label="Misc" />
                     <field name="cdn_cors" label="PLG_GZIP_FIELD_CDN_CORS_LABEL" description="PLG_GZIP_FIELD_CDN_CORS_DESCRIPTION" type="radio" default="1" class="btn-group">
@@ -88,11 +88,15 @@
                     </field>
                     <field name="cdn_access_control_origin" label="PLG_GZIP_FIELD_CDN_ACCESS_CONTROL_ORIGIN_LABEL" type="text" description="PLG_GZIP_FIELD_CDN_CDN_ACCESS_CONTROL_ORIGIN_DESCRIPTION" default="*" />
                     <field name="cdn_redirect" label="PLG_GZIP_FIELD_CDN_REDIRECT_LABEL" type="text" description="PLG_GZIP_FIELD_CDN_REDIRECT_DESCRIPTION" />
+
+                    <field type="spacer" hr="true" />
                     <fields name="cdn">
                         <field name="1" label="PLG_GZIP_FIELD_CDN_0_LABEL" description="PLG_GZIP_FIELD_CDN_0_DESCRIPTION" type="text" />
                         <field name="2" label="PLG_GZIP_FIELD_CDN_1_LABEL" description="PLG_GZIP_FIELD_CDN_1_DESCRIPTION" type="text" />
                         <field name="3" label="PLG_GZIP_FIELD_CDN_2_LABEL" description="PLG_GZIP_FIELD_CDN_2_DESCRIPTION" type="text" />
                     </fields>
+
+                    <field type="spacer" hr="true" />
                     <field name="cdntypes_custom" label="PLG_GZIP_FIELD_CDN_TYPES_CUSTOM_LABEL" hint="PLG_GZIP_FIELD_CDN_TYPES_CUSTOM_HINT" description="PLG_GZIP_FIELD_CDN_TYPES_CUSTOM_DESCRIPTION" type="textarea" />
                     <field name="cdn_types" type="checkboxes" label="PLG_GZIP_FIELD_CDN_TYPES_DEFAULT_LABEL" checked="js,css,eot,otf,ttf,woff,woff2" description="PLG_GZIP_FIELD_CDN_TYPES_DEFAULT_DESCRIPTION" />
                 </fields>
@@ -240,11 +244,41 @@
                     </field>
                     <field type="spacer" hr="true" />
                     <field type="spacer" label="Configure when to display network unavailable page" />
-                    <field name="pwa_offline_page" label="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_DESCRIPTION" hint="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_HINT" type="text" default="" />
-                    <field name="pwa_offline_method" label="PLG_GZIP_FIELD_PWA_OFFLINE_METHOD_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_METHOD_DESCRIPTION" type="list" default="GET" multiple="multiple">
+                    <field name="pwa_offline_enabled" label="PLG_GZIP_FIELD_PWA_OFFLINE_ENABLED_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_ENABLED_DESCRIPTION" class="btn-group" type="radio" default="1">
+                        <option value="1">JYes</option>
+                        <option value="0">JNo</option>
+                    </field>
+                    <field name="pwa_offline_method" label="PLG_GZIP_FIELD_PWA_OFFLINE_METHOD_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_METHOD_DESCRIPTION" type="list" class="btn-group" default="GET" multiple="multiple">
                         <option value="GET">JOPTION_PWA_OFFLINE_METHOD_GET</option>
                         <option value="POST">JOPTION_PWA_OFFLINE_METHOD_POST</option>
                     </field>
+                    <field name="pwa_offline_pref" label="PLG_GZIP_FIELD_PWA_OFFLINE_PREF_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_PREF_DESCRIPTION" type="radio" default="html" class="btn-group">
+                        <option value="url">JOPTION_PWA_OFFLINE_PREF_URL</option>
+                        <option value="html">JOPTION_PWA_OFFLINE_PREF_HTML</option>
+                    </field>
+                    <field name="pwa_offline_page" label="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_DESCRIPTION" hint="PLG_GZIP_FIELD_PWA_OFFLINE_PAGE_HINT" type="text" default="" />
+                    <field name="pwa_offline_html_page" label="PLG_GZIP_FIELD_PWA_OFFLINE_HTML_PAGE_LABEL" description="PLG_GZIP_FIELD_PWA_OFFLINE_HTML_PAGE_DESCRIPTION" hint="PLG_GZIP_FIELD_PWA_OFFLINE_HTML_PAGE_HINT" type="textarea" rows="15" cols="80" filter="raw" default="&lt;!doctype html&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Site Unreachable&lt;/title&gt;
+&lt;style&gt;
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+&lt;/style&gt;
+
+&lt;article&gt;
+    &lt;h1&gt;Page unavailable&lt;/h1&gt;
+    &lt;div&gt;
+        &lt;p&gt;Sorry for the inconvenience but we&amp;rsquo;re are not able to open the page you requested at this time.&lt;/p&gt;
+        &lt;p&gt;&lt;a href=&quot;#&quot; onclick=&quot;location.reload(); return false&quot;&gt;Try again&lt;/a&gt;&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/article&gt;
+&lt;script&gt;
+  window.addEventListener(&apos;online&apos;,  function () { location.reload() });
+&lt;/script&gt;" />
                     <field type="spacer" hr="true" />
                     <field type="spacer" label="App manifest settings" />
                     <field name="pwa_app_manifest" label="PLG_GZIP_FIELD_PWA_MANIFEST_LABEL" description="PLG_GZIP_FIELD_PWA_MANIFEST_DESCRIPTION" type="radio" class="btn-group" default="1">
