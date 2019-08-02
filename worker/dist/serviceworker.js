@@ -896,7 +896,7 @@
 		 * service worker buid date
 		 */
 		builddate: {
-			value: "2019-07-25 22:40:36-04:00",
+			value: "2019-07-25 22:44:54-04:00",
 			enumerable: true
 		},
 		/**
