@@ -164,10 +164,10 @@ class PlgSystemGzip extends JPlugin
 
 				if (!empty($this->options['imagesvgplaceholder'])) {
 
-					$debug = empty($this->options['debug']) ? '.min' : '';
+					$debug = empty($this->options['debug']) || !empty($options['minifyjs']) ? '.min' : '';
 
 					$document->addCustomTag('<style type="text/css" data-position="head">'.file_get_contents(__DIR__.'/css/images.css').'</style>');
-					$document->addCustomTag('<script data-position="head" data-ignore="true">'.file_get_contents(__DIR__.'/imagesnojs'.($debug || !empty($this->options['minifyjs']) ? '.min' : '').'.js').'</script>');
+					$document->addCustomTag('<script data-position="head" data-ignore="true">'.file_get_contents(__DIR__.'/imagesnojs'.$debug.'.js').'</script>');
 
 					$document->addScript('plugins/system/gzip/js/dist/lib'.$debug.'.js');
 					$document->addScript('plugins/system/gzip/js/dist/lib.images'.$debug.'.js');
@@ -675,33 +675,7 @@ class PlgSystemGzip extends JPlugin
             }
 
             $options[$key.'_path'] = $prefix.$path;
-		}
-		
-		// Save-Data header enforce some settings
-		if (isset($_SERVER["HTTP_SAVE_DATA"]) && strtolower($_SERVER["HTTP_SAVE_DATA"]) === "on") {
-			
-			// optimize images
-			$options['imageenabled'] = true;
-			$options['imageconvert'] = true;
-			$options['imagedimensions'] = true;
-
-			// optimize css
-			$options['asynccss'] = true;
-			$options['minifycss'] = true;
-			$options['fetchcss'] = true;
-			$options['cssenabled'] = true;
-			$options['mergecss'] = true;
-			$options['imagecssresize'] = true;
-			$options['criticalcssenabled'] = true;
-
-			// optimize javascript
-			$options['jsenabled'] = true;
-			$options['fetchjs'] = true;
-			$options['minifyjs'] = true;
-			$options['mergejs'] = true;
-
-			// enable service worker? no?
-		}
+        }
 
         $body = $app->getBody();
 
@@ -709,19 +683,36 @@ class PlgSystemGzip extends JPlugin
 
         GZipHelper::$options = $options;
 
-		$body = GZipHelper::parseImages($body, $options);
+        if (!empty($options['imageenabled'])) {
 
-        $profiler->mark('afterParseImages');
-        $body = GZipHelper::parseCss($body, $options);
-
-        $profiler->mark('afterParseCss');
-		$body = GZipHelper::parseScripts($body, $options);
+			$body = GZipHelper::parseImages($body, $options);
+			$profiler->mark('afterParseImages');
+		}
 		
-        
-        $profiler->mark('afterParseScripts');
-        $body = GZipHelper::parseURLs($body, $options);
+        if (!empty($options['cssenabled'])) {
 
-        $profiler->mark('afterParseURLs');
+			$body = GZipHelper::parseCss($body, $options);
+			$profiler->mark('afterParseCss');
+		}
+		
+        if (!empty($options['jsenabled'])) {
+
+			$body = GZipHelper::parseScripts($body, $options);
+			$profiler->mark('afterParseScripts');
+		}
+		
+        if (!empty($options['cachefiles'])) {
+
+			$body = GZipHelper::parseURLs($body, $options);
+			$profiler->mark('afterParseURLs');
+		}
+		
+		if (!empty($options['minifyhtml'])) {
+				
+			$body = GZipHelper::minifyHTML($body, $options);
+			$profiler->mark('afterMinifyHTML');
+		}
+
 		$app->setBody($body);
     }
 
