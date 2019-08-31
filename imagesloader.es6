@@ -97,9 +97,9 @@ LIB.ready(function (undef) {
 				}
 
 				oldImage.classList.remove(
-					"image-placeholder",
 					"image-placeholder-lqip",
-					"image-placeholder-svg"
+					"image-placeholder-svg",
+					"image-placeholder"
 				);
 				container.insertBefore(oldImage, container.firstElementChild);
 			},
@@ -126,7 +126,6 @@ LIB.ready(function (undef) {
 
 			oldImage.removeAttribute("data-srcset");
 			oldImage.removeAttribute("data-src");
-			oldImage.classList.add('image-placeholder-complete');
 
 			while (
 				container != undef &&
@@ -135,13 +134,14 @@ LIB.ready(function (undef) {
 				container = container.parentElement;
 			}
 
-			//	container.classList.add("image-placeholder-complete");
-			container.parentElement.insertBefore(oldImage, container);
+			container.classList.add("image-placeholder-complete");
 
 			setTimeout(function () {
+				//    if (container.parentElement != null) {
 
-				oldImage.classList.remove('image-placeholder-complete');
+				container.parentElement.insertBefore(oldImage, container);
 				container.parentElement.removeChild(container);
+				//	}
 			}, 10);
 		}, 10);
 	}
