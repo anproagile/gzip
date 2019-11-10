@@ -2,7 +2,7 @@
 
 Configure images settings.
 
-![Images settings](../images/images-settings.PNG)
+![Images settings](./img/images-settings.PNG)
 
 ## Process Images
 
