@@ -247,11 +247,6 @@ class SecureHeadersHelper {
 
 			$csp = [];
 
-			if (!empty($options['upgrade_insecure_requests'])) {
-
-				$csp[] = 'upgrade-insecure-requests';
-			}
-
 			if (!empty($options['csp_baseuri'])) {
 
 				$csp[] = 'base-uri \'' . $options['csp_baseuri'] . "'";
