@@ -18,6 +18,13 @@ defined('JPATH_PLATFORM') or die;
 
 class JFormFieldFileSize extends JFormField
 {
+	/**
+	 * The form field type.
+	 *
+	 * @var    string
+	 * @since  11.3
+	 */
+//	protected $type = 'Color';
 
 	/**
 	 * Method to get the field input markup.

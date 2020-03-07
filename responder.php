@@ -2,407 +2,289 @@
 
 defined('_JEXEC') or die;
 
-/**
- * Serve files with cache headers.
- *
- * - supports range requests
- * - can send CORS headers
- * - user can extend supported mimetypes by editing the plugin settings
- * - precompress files using brotli or gzip
- *
- * @package     GZip Plugin
- * @copyright   Copyright (C) 2005 - 2018 Thierry Bela.
- *
- * dual licensed
- *
- * @license     LGPL v3
- * @license     MIT License
- */
-
-/**
- * @var $app ;
- */
-
-function enable_compression () {
+if (!ini_get('zlib.output_compression')) {
 
 	ob_end_clean();
-
-	if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-
-		$encoding = preg_split('#[,\s]+#', $_SERVER['HTTP_ACCEPT_ENCODING'], -1, PREG_SPLIT_NO_EMPTY);
-
-		if (extension_loaded('brotli') && in_array('br', $encoding)) {
-
-			ini_set('brotli.output_compression', 'On');
-		}
-
-		else {
-
-			ini_set('brotli.output_compression', 'On');
-		}
-	}
+	ob_start('ob_gzhandler');
 }
 
-use \Gzip\GZipHelper;
+	/**
+	 * Serve files with cache headers.
+	 *
+	 * - supports range requests
+	 * - can send CORS headers
+	 * - user can extend supported mimetypes by editing the plugin settings
+	 *
+	 * @package     GZip Plugin
+	 * @copyright   Copyright (C) 2005 - 2018 Thierry Bela.
+	 *
+	 * dual licensed
+	 *
+	 * @license     LGPL v3
+	 * @license     MIT License
+	 */
 
-$cdn_access_control_origin = isset($this->options['cdn_access_control_origin']) ? $this->options['cdn_access_control_origin'] : '*';
+/**
+ * @var $app;
+ */
 
-// cookieless domain?
-if (!empty(GZipHelper::$hosts)) {
+	use \Gzip\GZipHelper;
 
-	foreach (GZipHelper::$hosts as $host) {
+	$cdn_access_control_origin = isset($this->options['cdn_access_control_origin']) ? $this->options['cdn_access_control_origin'] : '*';
 
-		if (preg_replace('#(https?:)?//([^/]+).*#', '$2', $host) == $_SERVER['SERVER_NAME']) {
+	// cookieless domain?
+	if (!empty(GZipHelper::$hosts)) {
 
-			$cdn_access_control_origin = JURI::getScheme() . '://' . $_SERVER['SERVER_NAME'];
+		foreach (GZipHelper::$hosts as $host) {
 
-			// delete cookies
-			if (isset($_SERVER['HTTP_COOKIE'])) {
+			if (preg_replace('#(https?:)?//([^/]+).*#', '$2', $host) == $_SERVER['SERVER_NAME']) {
 
-				$cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+				$cdn_access_control_origin = JURI::getScheme().'://'.$_SERVER['SERVER_NAME'];
 
-				$expiry = time() - 1000;
+				// delete cookies
+				if (isset($_SERVER['HTTP_COOKIE'])) {
 
-				foreach ($cookies as $cookie) {
+					$cookies = explode(';', $_SERVER['HTTP_COOKIE']);
 
-					$parts = explode('=', $cookie);
+					$expiry = time() - 1000;
 
-					$name = trim($parts[0]);
-					setcookie($name, '', $expiry);
-					setcookie($name, '', $expiry, '/');
+					foreach ($cookies as $cookie) {
+
+						$parts = explode('=', $cookie);
+
+						$name = trim($parts[0]);
+						setcookie($name, '', $expiry);
+						setcookie($name, '', $expiry, '/');
+					}
 				}
-			}
 
-			break;
+				break;
+			}
 		}
 	}
-}
 
-if (!empty($this->options['cdn_cors'])) {
-
-	header('Access-Control-Allow-Origin: ' . $cdn_access_control_origin);
-	header('Access-Control-Expose-Headers: Date');
-}
-
-$uri = $_SERVER['REQUEST_URI'];
-
-$matches = preg_split('#/' . $this->route . '(((nf)|(cf)|(cn)|(no)|(co))/)?#', $uri, -1, PREG_SPLIT_NO_EMPTY);
-
-$uri = end($matches);
-
-$useEtag = strpos($uri, '1/') === 0;
-
-$uri = explode('/', $uri, $useEtag ? 3 : 2);
-
-$file = preg_replace('~[#|?].*$~', '', end($uri));
-$file = urldecode($file);
-
-$encrypted = preg_match('#\/e\/([^/]+)\/([^/]+)#', $_SERVER['REQUEST_URI'], $matches);
-$encrypted_data = null;
-
-if ($encrypted && !empty($this->options['expiring_links']['secret']) && !empty($matches)) {
-
-	$raw_message = hex2bin($matches[1]);
-	$nonce2 = substr($raw_message, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-	$encrypted_message2 = substr($raw_message, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-	$decrypted_message = sodium_crypto_secretbox_open($encrypted_message2, $nonce2, hex2bin($this->options['expiring_links']['secret']));
-
-	$encrypted_data = json_decode($decrypted_message, JSON_OBJECT_AS_ARRAY);
-
-	$badRequest = !is_array($encrypted_data) ||
-		!isset($encrypted_data['path']) ||
-		!isset($encrypted_data['duration']) ||
-		!isset($encrypted_data['method']);
-
-	if (!$badRequest && !empty($encrypted_data['method'])) {
-
-		$badRequest = $_SERVER['REQUEST_METHOD'] != $encrypted_data['method'];
+	if (!empty($this->options['cdn_cors'])) {
+		
+		header('Access-Control-Allow-Origin: '.$cdn_access_control_origin);
+		header('Access-Control-Expose-Headers: Date');
 	}
 
-	if ($badRequest) {
+	$uri = $_SERVER['REQUEST_URI'];
 
-		header("HTTP/1.1 400 Bad Request");
-		exit;
+	$matches = preg_split('#/'.$this->route.'(((nf)|(cf)|(cn)|(no)|(co))/)?#', $uri, -1, PREG_SPLIT_NO_EMPTY);
+
+	$uri = end($matches);
+
+	$useEtag = strpos($uri, '1/') === 0;
+
+	$uri = explode('/', $uri, $useEtag ? 3 : 2);
+
+	$file = preg_replace('~[#|?].*$~', '', end($uri));
+	$file = urldecode($file);
+
+	$encrypted = preg_match('#\/e\/([^/]+)\/([^/]+)#', $_SERVER['REQUEST_URI'], $matches);
+	$encrypted_data = null;
+
+	if ($encrypted && !empty($this->options['expiring_links']['secret']) && !empty($matches)) {
+
+		$raw_message = hex2bin($matches[1]);
+		$nonce2 = substr($raw_message, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+		$encrypted_message2 = substr($raw_message, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+		$decrypted_message = sodium_crypto_secretbox_open($encrypted_message2, $nonce2, hex2bin($this->options['expiring_links']['secret']));
+
+		$encrypted_data = json_decode($decrypted_message, JSON_OBJECT_AS_ARRAY);
+
+		$badRequest = !is_array($encrypted_data) ||
+			!isset($encrypted_data['path']) ||
+			!isset($encrypted_data['duration']) ||
+			!isset($encrypted_data['method']);
+
+		if (!$badRequest && !empty($encrypted_data['method'])) {
+
+			$badRequest = $_SERVER['REQUEST_METHOD'] != $encrypted_data['method'];
+		}
+
+		if($badRequest) {
+
+			header("HTTP/1.1 400 Bad Request");
+			$app->close();
+		}
+
+		if (+$encrypted_data['duration'] < time()) {
+
+			header("HTTP/1.1 410 Gone");
+			$app->close();
+		}
+
+		if (!GZipHelper::isFile($encrypted_data['path'])) {
+
+			header("HTTP/1.1 404 Not Found");
+			$app->close();
+		}
+
+		$file = $encrypted_data['path'];
 	}
 
-	if (+$encrypted_data['duration'] < time()) {
+	$utf8_file = utf8_decode($file);
 
-		header("HTTP/1.1 410 Gone");
-		exit;
+	if (GZipHelper::isFile($utf8_file)) {
+
+		$file = $utf8_file;
 	}
 
-	if (!GZipHelper::isFile($encrypted_data['path'])) {
+	else if(!GZipHelper::isFile($file)) {
 
 		header("HTTP/1.1 404 Not Found");
 		exit;
 	}
 
-	$file = $encrypted_data['path'];
-}
+	$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+	$accepted = array_merge(GZipHelper::accepted(), GZipHelper::$static_types);
 
-$utf8_file = utf8_decode($file);
+	if(!isset($accepted[$ext])) {
 
-if (GZipHelper::isFile($utf8_file)) {
+		header('HTTP/1.1 403 Forbidden');
+		exit;
+	}
 
-	$file = $utf8_file;
-} else if (!GZipHelper::isFile($file)) {
+	$mtime = filemtime($file);
+	$range = [];
+	$size = 0;
 
-	header("HTTP/1.1 404 Not Found");
-	exit;
-}
+	if(empty($useEtag) && isset($_SERVER['HTTP_RANGE'])) {
 
-$ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-$accepted = array_merge(GZipHelper::accepted(), GZipHelper::$static_types);
+		$useEtag = 1;
+	}
 
-if (!isset($accepted[$ext])) {
+	if(isset($_SERVER['HTTP_RANGE'])) {
 
-	header('HTTP/1.1 403 Forbidden');
-	exit;
-}
+		$size = filesize($file);
+		$ranges = preg_split('#(^bytes=)|[\s,]#', $_SERVER['HTTP_RANGE'], -1, PREG_SPLIT_NO_EMPTY);
 
-$mtime = filemtime($file);
-$range = [];
-$size = 0;
+		foreach ($ranges as $range) {
 
-if (empty($useEtag) && isset($_SERVER['HTTP_RANGE'])) {
+			$range = explode('-', $range);
 
-	$useEtag = 1;
-}
+			if(
+				count($range) != 2 ||
+				($range[0] === '' && $range[1] === '') ||
+				$range[0] > $size - 1 ||
+				$range[1] > $size - 1 ||
+				($range[1] !== '' && $range[1] < $range[0])
+			) {
 
-if (isset($_SERVER['HTTP_RANGE'])) {
+				header('HTTP/1.1 416 Range Not Satisfiable');
+				exit;
+			}
+		}
 
-	$size = filesize($file);
-	$ranges = preg_split('#(^bytes=)|[\s,]#', $_SERVER['HTTP_RANGE'], -1, PREG_SPLIT_NO_EMPTY);
+		$range = explode('-', array_shift($ranges));
 
-	foreach ($ranges as $range) {
+		if($range[0] === '') {
 
-		$range = explode('-', $range);
+			$range[0] = 0;
+		}
 
-		if (
-			count($range) != 2 ||
-			($range[0] === '' && $range[1] === '') ||
-			$range[0] > $size - 1 ||
-			$range[1] > $size - 1 ||
-			($range[1] !== '' && $range[1] < $range[0])
-		) {
+		if($range[1] === '') {
 
-			header('HTTP/1.1 416 Range Not Satisfiable');
+			$range[1] = $size - 1;
+		}
+
+		header('HTTP/1.1 206 Partial Content');
+		header('Content-Length:'.($range[1] - $range[0] + 1));
+		header('Content-Range: bytes '.$range[0].'-'.$range[1].'/'.$size);
+	}
+
+	header('X-Content-Type-Options: nosniff');
+
+	if($useEtag) {
+
+		$etag = Gzip\GZipHelper::shorten(hash_file('crc32b', $file));
+
+		if(!empty($range)) {
+
+			$etag .= '-'.implode('R', $range);
+		}
+
+		if(isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $etag) {
+
+			header('HTTP/1.1 304 Not Modified');
 			exit;
 		}
+
+		header('ETag: ' . $etag);
 	}
 
-	$range = explode('-', array_shift($ranges));
-
-	if ($range[0] === '') {
-
-		$range[0] = 0;
-	}
-
-	if ($range[1] === '') {
-
-		$range[1] = $size - 1;
-	}
-
-	header('HTTP/1.1 206 Partial Content');
-	header('Content-Length:' . ($range[1] - $range[0] + 1));
-	header('Content-Range: bytes ' . $range[0] . '-' . $range[1] . '/' . $size);
-}
-
-header('X-Content-Type-Options: nosniff');
-
-if ($useEtag) {
-
-	$etag = Gzip\GZipHelper::shorten(hash_file('crc32b', $file));
-
-	if (!empty($range)) {
-
-		$etag .= '-' . implode('R', $range);
-	}
-
-	if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] == $etag) {
+	else if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $mtime) {
 
 		header('HTTP/1.1 304 Not Modified');
 		exit;
 	}
 
-	header('ETag: ' . $etag);
-} else if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $mtime) {
+	header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $mtime));
+	header('Date: ' . gmdate('D, d M Y H:i:s T'));
 
-	header('HTTP/1.1 304 Not Modified');
-	exit;
-}
+	if(preg_match('#(text)|(xml)#', $accepted[$ext])) {
 
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $mtime));
-header('Date: ' . gmdate('D, d M Y H:i:s T'));
+		header('Content-Type: '.$accepted[$ext].';charset=utf-8');
+	}
+	else {
 
-if (preg_match('#(text)|(xml)#', $accepted[$ext])) {
-
-	header('Content-Type: ' . $accepted[$ext] . ';charset=utf-8');
-} else {
-
-	header('Content-Type: ' . $accepted[$ext]);
-}
-
-$dt = new DateTime();
-
-$now = $dt->getTimestamp();
-
-$maxage = 0;
-
-if (!empty($encrypted_data['duration'])) {
-
-	$maxage = $encrypted_data['duration'] - time();
-} else {
-
-	$maxage = $this->params->get('gzip.pwa_cache.' . $ext);
-
-	// -1 - ignore
-	//  0 - unset
-	if (intval($maxage) <= 0) {
-
-		$maxage = $this->params->get('gzip.maxage', '2months');
+		header('Content-Type: '.$accepted[$ext]);
 	}
 
-	$dt->modify('+' . $maxage);
-	$maxage = $dt->getTimestamp() - $now;
-}
+	$dt = new DateTime();
 
+	$now = $dt->getTimestamp();
 
-header('Accept-Ranges: bytes');
-header('Cache-Control: public, max-age=' . $maxage . ', stale-while-revalidate=' . (2 * $maxage) . ', immutable');
+	$maxage = 0;
 
-if (!empty($range) && ($range[0] > 0 || $range[1] < $size - 1)) {
+	if (!empty($encrypted_data['duration'])) {
 
-	enable_compression ();
-
-	$cur = $range[0];
-	$end = $range[1];
-
-	$handle = fopen($file, 'rb');
-
-	if ($cur > 0) {
-
-		fseek($handle, $cur);
-	}
-
-	//1024 * 16 = 16384
-	while (!feof($handle) && $cur <= $end && (connection_status() == 0)) {
-		print fread($handle, min(16384, ($end - $cur) + 1));
-		$cur += 16384;
-	}
-
-	fclose($handle);
-	exit;
-}
-
-$validFileSize = true;
-$precompress = !isset($this->options['precompressfiles']) || !empty($this->options['precompressfiles']);
-
-if (!empty($this->options['precompressfiles_min_file_size']) || !empty($this->options['precompressfiles_max_file_size'])) {
-
-	$minFileSize = GZipHelper::file_size($this->options['precompressfiles_min_file_size']);
-	$maxFileSize = GZipHelper::file_size($this->options['precompressfiles_max_file_size']);
-
-	$filesize = filesize($file);
-
-	if ($minFileSize > 0) {
-
-		if ($filesize >= $minFileSize) {
-
-			if ($maxFileSize > 0) {
-
-				$validFileSize = $filesize <= $maxFileSize;
-			}
-		}
-
-		else {
-
-			$validFileSize = false;
-		}
-	}
-
-	else if ($maxFileSize > 0) {
-
-		$validFileSize = $filesize <= $maxFileSize;
-	}
-}
-
-// text file only?
-if ($precompress && $validFileSize && preg_match('#(text)|(xml)|(font)#', $accepted[$ext]) && isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
-
-	$encoding = preg_split('#[,\s]+#', $_SERVER['HTTP_ACCEPT_ENCODING'], -1, PREG_SPLIT_NO_EMPTY);
-
-	$cb = GZipHelper::getHashMethod();
-
-	$name = '';
-	$hash = $cb ($file);
-	$last_hash = '';
-	$basename = $this->options['c_path'].sha1($file).'-'.pathinfo($file, PATHINFO_FILENAME);
-
-	$data = file_get_contents($file);
-
-	// store file hash
-	$cache = $basename.'.'.$ext.'.php';
-
-	if (!is_file($cache)) {
-
-		file_put_contents($cache, '<?php'."\n".'defined(\'_JEXEC\') or die;'."\n".'$last_hash = '.json_encode($hash).';');
+		$maxage = $encrypted_data['duration'] - time();
 	}
 
 	else {
 
-		require $cache;
+		$maxage = $this->params->get('gzip.pwa_cache.'.$ext);
 
-		if ($hash != $last_hash) {
+		// -1 - ignore
+		//  0 - unset
+		if (intval($maxage) <= 0) {
 
-			file_put_contents($cache, '<?php'."\n".'defined(\'_JEXEC\') or die;'."\n".'$last_hash = '.json_encode($hash).';');
+			$maxage = $this->params->get('gzip.maxage', '2months');
 		}
+
+		$dt->modify('+'.$maxage);
+		$maxage = $dt->getTimestamp() - $now;
 	}
 
-	if (function_exists('brotli_compress') && in_array('br', $encoding)) {
 
-		$name = $basename.'.'.$ext.'.br';
+	header('Accept-Ranges: bytes');
+	header('Cache-Control: public, max-age='.$maxage.', stale-while-revalidate='.(2 * $maxage).', immutable');
 
-		header('Content-Encoding: br');
+	if(!empty($range) && ($range[0] > 0 || $range[1] < $size -1)) {
 
-		if (!file_exists($name) || $last_hash != $hash) {
+		$cur = $range[0];
+		$end = $range[1];
 
-			$data = brotli_compress($data);
-		}
-	}
+		$handle = fopen($file, 'rb');
 
-	else if (function_exists('gzencode') && in_array('gzip', $encoding)) {
+		if($cur > 0) {
 
-		$name = $basename.'.'.$ext.'.gz';
-
-		header('Content-Encoding: gzip');
-
-		if (!file_exists($name) || $last_hash != $hash) {
-
-			$data = gzencode($data);
-		}
-	}
-
-	if ($name !== '') {
-
-		if (!file_exists($name) || $last_hash != $hash) {
-
-			file_put_contents($name, $data);
+			fseek($handle, $cur);
 		}
 
-		ob_end_clean();
+		//1024 * 16 = 16384
+		while(!feof($handle) && $cur <= $end && (connection_status() == 0))
+		{
+			print fread($handle, min(16384, ($end - $cur) + 1));
+			$cur += 16384;
+		}
 
-		ini_set('zlib.output_compression', 'Off');
-		ini_set('brotli.output_compression', 'Off');
-
-		readfile($name);
+		fclose($handle);
 		exit;
 	}
-}
-//else {
 
-enable_compression();
-//}
-
-readfile($file);
-exit;
+	readfile($file);
+	exit;
