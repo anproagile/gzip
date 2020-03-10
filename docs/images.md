@@ -4,10 +4,6 @@ Configure images settings: automatic conversion, resizing, lazyloading and respo
 
 ![Images settings](./img/images-settings.PNG)
 
-## Requirement
-
-Image processing requires the gd library
-
 ## General Settings
 
 ### Process Images
