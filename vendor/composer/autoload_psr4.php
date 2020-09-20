@@ -6,6 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'TBela\\CSS\\' => array($vendorDir . '/tbela99/css/src/TBela/CSS'),
     'Elphin\\IcoFileLoader\\' => array($vendorDir . '/lordelph/icofileloader/src'),
 );

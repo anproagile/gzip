@@ -42,7 +42,7 @@ class HTMLHelper {
 
 		if(!empty($script)) {
 
-			$html = str_replace('</head>', $css.'<script data-position="head">'.$script.'</script></head>', $html);
+			$html = str_replace('</head>', $css.'<script data-position="head" data-ignore="true">'.$script.'</script></head>', $html);
 		}
 
 		$script = '';
@@ -87,7 +87,7 @@ class HTMLHelper {
 			 * attempt to fix invalidHTML - missing space between attributes -  before minifying
 			 * <div id="foo"class="bar"> => <div id="foo" class="bar">
 			 */
-			$html = preg_replace_callback('#<([^\s>]+)([^>]+)>#s', function ($matches) {
+			$html = preg_replace_callback('#<(\S+)([^>]+)>#s', function ($matches) {
 
 				$result = '<'.$matches[1];
 
@@ -168,6 +168,7 @@ class HTMLHelper {
 			$html = preg_replace('#<!--.*?-->#s', '', $html);
 		}
 
+	//	$html = str_replace($options['scheme'].'://', '//', $html);
 		$html = preg_replace_callback('#<html(\s[^>]+)?>(.*?)</head>#si', function ($matches) {
 
 			return '<html'.$matches[1].'>'. preg_replace('#>[\r\n\t ]+<#s', '><', $matches[2]).'</head>';
