@@ -3,7 +3,7 @@
 namespace TBela\CSS\Query;
 
 use Exception;
-use TBela\CSS\Element\RuleList;
+use TBela\CSS\RuleList;
 
 class TokenSelect extends Token implements TokenSelectInterface
 {

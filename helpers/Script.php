@@ -16,10 +16,6 @@ namespace Gzip\Helpers;
 use Gzip\GZipHelper;
 use Patchwork\JSqueeze as JSqueeze;
 
-use Peast\Formatter\PrettyPrint;
-use Peast\Formatter\Compact;
-
-
 class ScriptHelper {
 
 	public function processHTML ($html, array $options = []) {

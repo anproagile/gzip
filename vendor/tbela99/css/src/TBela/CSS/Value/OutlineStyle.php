@@ -11,7 +11,7 @@ use \TBela\CSS\Value;
 class OutlineStyle extends Value
 {
 
-    use UnitTrait;
+    use ValueTrait;
 
     protected static $keywords = [
         'auto',

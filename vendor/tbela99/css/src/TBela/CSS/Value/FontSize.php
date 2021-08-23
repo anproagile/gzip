@@ -8,10 +8,10 @@ use \TBela\CSS\Value;
  * Css string value
  * @package TBela\CSS\Value
  */
-class FontSize extends Unit
+class FontSize extends Value
 {
 
-    use UnitTrait, ValueTrait;
+    use ValueTrait;
 
     protected static $keywords = [
 
@@ -32,7 +32,7 @@ class FontSize extends Unit
     /**
      * @inheritDoc
      */
-    public static function matchToken($token, $previousToken = null, $previousValue = null, $nextToken = null, $nextValue = null, $index = null, array $tokens = [])
+    public static function matchToken($token, $previousToken = null, $previousValue = null)
     {
         if (($token->type == 'number' && $token->value == 0) || ($token->type == 'unit' && !in_array($token->unit, ['turn', 'rad', 'grad', 'deg']))) {
 

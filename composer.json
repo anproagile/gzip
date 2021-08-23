@@ -2,7 +2,6 @@
     "require": {
         "lordelph/icofileloader": "^2.0",
         "tbela99/css": "dev-php56-backport",
-      "ext-gd": "*",
-        "mck89/peast": "dev-master"
+      "ext-gd": "*"
     }
 }

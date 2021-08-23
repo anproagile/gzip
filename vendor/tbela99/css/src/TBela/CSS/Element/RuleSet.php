@@ -4,6 +4,7 @@ namespace TBela\CSS\Element ;
 
 use Exception;
 use InvalidArgumentException;
+use TBela\CSS\RuleList;
 
 /**
  * Rules container

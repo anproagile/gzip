@@ -8,12 +8,12 @@ namespace TBela\CSS\Value;
  */
 class OutlineColor extends Color
 {
-    use UnitTrait;
+    use ValueTrait;
 
     /**
      * @inheritDoc
      */
-    public static function matchToken($token, $previousToken = null, $previousValue = null, $nextToken = null, $nextValue = null, $index = null, array $tokens = [])
+    public static function matchToken($token, $previousToken = null, $previousValue = null)
     {
         return $token->type == 'color';
     }

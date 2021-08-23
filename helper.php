@@ -18,11 +18,7 @@ defined('JPATH_PLATFORM') or die;
 use Exception;
 use JProfiler as JProfiler;
 use JUri;
-//use Patchwork\JSqueeze as JSqueeze;
-use \Peast\Peast;
-use \Peast\Formatter\Compact;
-use \Peast\Formatter\PrettyPrint;
-use \Peast\Renderer;
+use Patchwork\JSqueeze as JSqueeze;
 use function base64_encode;
 use function curl_close;
 use function curl_exec;
@@ -396,7 +392,7 @@ class GZipHelper
 	public static function js($file, $remote_service = true)
 	{
 
-		static $parser;
+		static $jsShrink;
 
 		$content = '';
 
@@ -422,22 +418,12 @@ class GZipHelper
 			return false;
 		}
 
-		if (is_null($parser)) {
+		if (is_null($jsShrink)) {
 
-			$parser = new Renderer(static::$options['minifyjs'] ? new Compact() : new PrettyPrint());
+			$jsShrink = new JSqueeze;
 		}
 
-		try {
-
-			return trim($parser->render(Peast::latest($content)->parse(), false, false), ';');
-		}
-
-		catch (Exception $e) {
-
-//			error_log($e->getTraceAsString());
-		}
-
-		return $content;
+		return trim($jsShrink->squeeze($content, false, false), ';');
 	}
 
 	/**
@@ -506,7 +492,7 @@ class GZipHelper
 
 		if (empty(static::$options['cachefiles'])) {
 
-			if ($file[0] == '/' || preg_match('#^(https?:)?//#', $file)) {
+			if ($file[0] == '/' || preg_match('#^(https?:)?//#')) {
 
 				return $file;
 			}
@@ -661,7 +647,7 @@ class GZipHelper
 
 		while ($id != 0) {
 			$id = ($id - ($r = $id % $base)) / $base;
-			$short = $alphabet[$r] . $short;
+			$short = $alphabet{$r} . $short;
 		}
 
 		$response = ltrim($short, '0');

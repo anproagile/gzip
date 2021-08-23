@@ -5,24 +5,23 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use JsonSerializable;
-use TBela\CSS\Interfaces\ObjectInterface;
 use TBela\CSS\Value;
 
 /**
- * string tokens set
+ * Css values set
  * @package CSS
  */
-class Set implements IteratorAggregate, JsonSerializable, Countable, ObjectInterface
+class Set implements IteratorAggregate, JsonSerializable, Countable
 {
     /**
-     * @var Value[]
+     * @var array
      * @ignore
      */
     protected $data = [];
 
     /**
      * Set constructor.
-     * @param Value[] $data
+     * @param array[Value] $data
      */
     public function __construct(array $data = [])
     {
@@ -78,28 +77,6 @@ class Set implements IteratorAggregate, JsonSerializable, Countable, ObjectInter
     }
 
     /**
-     * @param string $type
-     * @return bool
-     */
-    public function match(string $type)
-    {
-        foreach ($this->data as $value) {
-
-            if (in_array($value->type, ['separator', 'whitespace'])) {
-
-                continue;
-            }
-
-            if (!$value->match($type)) {
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * filter values
      * @param callable $filter
      * @return $this
@@ -139,19 +116,13 @@ class Set implements IteratorAggregate, JsonSerializable, Countable, ObjectInter
     /**
      * split a set according to $separator
      * @param string $separator
-     * @return Set[]
+     * @return array
      */
     public function split ($separator) {
 
         return $this->doSplit($this->data, $separator);
     }
 
-    /**
-     * @param array $data
-     * @param string $separator
-     * @return Set[]
-     * @ignore
-     */
     protected function doSplit (array $data, $separator) {
 
         if (empty($data)) {
@@ -186,6 +157,20 @@ class Set implements IteratorAggregate, JsonSerializable, Countable, ObjectInter
     }
 
     /**
+     * append the second set data to the first set data
+     * @param int $index
+     * @param int|null $length
+     * @param Set[] $replacement
+     * @return Set
+     */
+    /*
+    public function splice ($index, $length = null, Set ...$replacement) {
+
+        $value = array_splice($this->data, $index, $length, $replacement);
+        return new Set([$value]);
+    }*/
+
+    /**
      * add an item to the set
      * @param Value $value
      * @return $this
@@ -207,26 +192,11 @@ class Set implements IteratorAggregate, JsonSerializable, Countable, ObjectInter
 
     /**
      * return an array of internal data
-     * @return Value[]
+     * @return array
      */
     public function toArray() {
 
         return $this->data;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function toObject()
-    {
-        $result = [];
-
-        foreach ($this->data as $datum) {
-
-            $result[] = $datum->toObject();
-        }
-
-        return $result;
     }
 
     /**

@@ -48,6 +48,7 @@ class SecureHeadersHelper
 			}
 
 			$links = [];
+
 			$tags = [];
 
 			$sections = array_filter([

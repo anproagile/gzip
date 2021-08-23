@@ -7,13 +7,11 @@ use TBela\CSS\Value;
 use TBela\CSS\Value\Set;
 
 /**
- * Compute shorthand properties. Used internally by PropertyList to compute shorthand for properties of the same type. example margin, margin-left, margin-top, margin-right, margin-bottom
+ * Compute shorthand properties. Used internally by PropertyList to compute shorthand for properties of the same type
  * @package TBela\CSS\Property
  */
 class PropertySet
 {
-    use PropertyTrait;
-
     /**
      * @var array
      * @ignore
@@ -249,6 +247,7 @@ class PropertySet
             return false;
         }
 
+        // value_map must be empty!!!
         foreach ($value_map as $val) {
 
             foreach ($val as $v) {
@@ -364,7 +363,7 @@ class PropertySet
                     break;
                 }
 
-                $result[$index] = trim(preg_replace_callback('#\S+#', function ($matches) use (&$values) {
+                $result[$index] = trim(preg_replace_callback('#\w+#', function ($matches) use (&$values) {
 
                     foreach ($values as $key => $property) {
 

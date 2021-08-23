@@ -23,14 +23,9 @@ defined('_JEXEC') or die;
  * @var $app ;
  */
 
-use \Gzip\GZipHelper;
-
 function enable_compression () {
 
-	if (ob_get_length()) {
-
-		ob_end_clean();
-	}
+	ob_end_clean();
 
 	if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
 
@@ -47,6 +42,8 @@ function enable_compression () {
 		}
 	}
 }
+
+use \Gzip\GZipHelper;
 
 $cdn_access_control_origin = isset($this->options['cdn_access_control_origin']) ? $this->options['cdn_access_control_origin'] : '*';
 
@@ -397,10 +394,7 @@ if ($precompress && $validFileSize && preg_match('#(text)|(xml)|(font)#', $accep
 			file_put_contents($name, $data);
 		}
 
-		if (ob_get_length()) {
-
-			ob_end_clean();
-		}
+		ob_end_clean();
 
 		ini_set('zlib.output_compression', 'Off');
 		ini_set('brotli.output_compression', 'Off');

@@ -11,7 +11,7 @@ use \TBela\CSS\Value;
 class FontStretch extends Value
 {
 
-    use UnitTrait;
+    use ValueTrait;
     /**
      * @var array
      * @ignore

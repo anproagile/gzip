@@ -777,7 +777,7 @@ class PlgSystemGzip extends JPlugin
 			GZipHelper::register(new Gzip\Helpers\EncryptedLinksHelper());
 		}
 
-		if (!empty($options['cachefiles']) || !empty($options['link_rel']) || (!empty($options['checksum']) && $options['checksum'] != 'none') ){
+		if (!empty($options['cachefiles']) || !empty($options['link_rel'])) {
 
 			GZipHelper::register(new Gzip\Helpers\UrlHelper());
 		}

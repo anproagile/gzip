@@ -11,7 +11,7 @@ use \TBela\CSS\Value;
 class FontStyle extends Value
 {
 
-    use UnitTrait;
+    use ValueTrait;
 
     protected static $keywords = [
 
@@ -37,7 +37,7 @@ class FontStyle extends Value
     /**
      * @inheritDoc
      */
-    public static function matchToken ($token, $previousToken = null, $previousValue = null, $nextToken = null, $nextValue = null, $index = null, array $tokens = []) {
+    public static function matchToken ($token, $previousToken = null, $previousValue = null) {
 
         if ($token->type == 'css-string' && in_array(strtolower($token->value), static::$keywords)) {
 
