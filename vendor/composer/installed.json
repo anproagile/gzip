@@ -255,6 +255,10 @@
                 "icon",
                 "load"
             ],
+            "support": {
+                "issues": "https://github.com/lordelph/icofileloader/issues",
+                "source": "https://github.com/lordelph/icofileloader/tree/master"
+            },
             "install-path": "../lordelph/icofileloader"
         },
         {
